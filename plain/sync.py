@@ -19,7 +19,7 @@ def connection():
 
 @app.post("/add")
 def add_record(data: Record):
-    async with connection() as conn, conn.cursor() as cur:
+    with connection() as conn, conn.cursor() as cur:
         cur.execute(
             f"replace into user_event(user, event, status) "
             f"value ({data.user}, {data.event}, '{'accepted' if data.subscribe else 'rejected'}')"
