@@ -16,7 +16,7 @@ def connection():
     )
 
 @asynccontextmanager
-def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI):
     app.state.create_connection = connection
     yield
 
