@@ -31,4 +31,3 @@ async def add_record(request: Request, data: Record):
         )
         await conn.commit()
     return {"status": 200}
-
