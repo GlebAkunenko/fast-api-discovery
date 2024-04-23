@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
     await pool.wait_closed()
 
 
-app = FastAPI(prefix="/plain/sync", lifespan=lifespan)
+app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/add")
