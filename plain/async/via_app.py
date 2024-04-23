@@ -13,6 +13,9 @@ async def lifespan(app: FastAPI):
     app.state.pool = await aiomysql.create_pool(host=config.host, port=3306,
                                       user=config.user, password=config.password,
                                       db=config.database, loop=loop)
+    async with app.state.pool.acquire() as conn, conn.cursor() as cursor:
+        await cursor.execute(f"truncate {config.database}.user_event")
+        await conn.commit()
     yield
     app.state.pool.close()
     await app.state.pool.wait_closed()
