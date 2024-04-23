@@ -16,8 +16,8 @@ async def lifespan(app: FastAPI):
     global pool
     loop = asyncio.get_event_loop()
     pool = await aiomysql.create_pool(host=config.host, port=3306,
-    user=config.user, password=config.password,
-    db=config.database, loop=loop)
+                                      user=config.user, password=config.password,
+                                      db=config.database, loop=loop)
     yield
     pool.close()
     await pool.wait_closed()
@@ -27,13 +27,12 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/add")
-def add_record(data: Record):
+async def add_record(data: Record):
     global pool
-    with pool.acquire() as conn, conn.cursor() as cursor:
-        cursor.execute(
+    async with pool.acquire() as conn, conn.cursor() as cursor:
+        await cursor.execute(
             f"replace into user_event(user, event, status) "
             f"value ({data.user}, {data.event}, '{'accepted' if data.subscribe else 'rejected'}')"
         )
-        conn.commit()
+        await conn.commit()
     return {"status": 200}
-
