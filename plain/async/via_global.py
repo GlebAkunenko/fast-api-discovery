@@ -10,18 +10,20 @@ from model import Record
 
 import config
 
-app = FastAPI(prefix="/plain/sync")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global pool
     loop = asyncio.get_event_loop()
     pool = await aiomysql.create_pool(host=config.host, port=3306,
-                                                user=config.user, password=config.password,
-                                                db=config.database, loop=loop)
+    user=config.user, password=config.password,
+    db=config.database, loop=loop)
     yield
     pool.close()
     await pool.wait_closed()
+
+
+app = FastAPI(prefix="/plain/sync", lifespan=lifespan)
 
 
 @app.post("/add")
